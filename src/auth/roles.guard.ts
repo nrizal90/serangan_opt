@@ -10,7 +10,6 @@ export class RolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user; // User diambil dari JWT payload
-
     const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
 
     if (!requiredRoles) {
@@ -19,7 +18,7 @@ export class RolesGuard implements CanActivate {
 
     // Ambil role dari database berdasarkan ID pengguna yang login
     const dbUser = await this.prisma.user.findUnique({
-      where: { id: user.id },
+      where: { id: user.userId },
       include: {
         role: true, // Mengambil role terkait pengguna
       },
