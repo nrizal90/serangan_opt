@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id         String   @id @default(uuid())
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  users      User[]
+}
+
+model User {
+  id         String   @id @default(uuid())
+  nama       String
+  email      String   @unique
+  password   String
+  roleId     String
+  lastLogin  DateTime?
+  fcmToken   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  role       Role     @relation(fields: [roleId], references: [id])
+  dataOpts   DataOpt[]
+}
+
+model JenisKomoditas {
+  id         String   @id @default(uuid())
+  nama       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  dataOpts   DataOpt[]
+}
+
+model JenisOpt {
+  id         String   @id @default(uuid())
+  nama       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  dataOpts   DataOpt[]
+}
+
+model Provinsi {
+  id         String   @id @default(uuid())
+  nama       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  kabupaten  Kabupaten[]
+  dataOpts   DataOpt[]
+}
+
+model Kabupaten {
+  id         String   @id @default(uuid())
+  provinsiId String
+  nama       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  provinsi   Provinsi @relation(fields: [provinsiId], references: [id])
+  dataOpts   DataOpt[]
+}
+
+model DataOpt {
+  id                   String   @id @default(uuid())
+  userId               String
+  komoditasId          String
+  optId                String
+  provinsiId           String
+  kabupatenId          String
+  tahun                Int
+  periode              String
+  seranganRingan       Float
+  seranganBerat        Float
+  seranganTotal        Float
+  pengendalianAPBN     Float
+  pengendalianAPBD1    Float
+  pengendalianAPBD2    Float
+  pengendalianSwadaya  Float
+  pengendalianTotal    Float
+  caraPengendalian     String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  user                 User     @relation(fields: [userId], references: [id])
+  jenisKomoditas       JenisKomoditas @relation(fields: [komoditasId], references: [id])
+  jenisOpt             JenisOpt @relation(fields: [optId], references: [id])
+  provinsi             Provinsi @relation(fields: [provinsiId], references: [id])
+  kabupaten            Kabupaten @relation(fields: [kabupatenId], references: [id])
+}
