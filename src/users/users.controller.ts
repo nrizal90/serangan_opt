@@ -59,12 +59,11 @@ export class UsersController {
     @Patch(':id')
     @SetMetadata('roles', ['Admin', 'User'])
     async updateUser(@Request() req, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-        const currentUserId = req.user.id;
+        const currentUserId = req.user.userId;
         const updatedUser = await this.usersService.updateUser(id, updateUserDto, currentUserId);
         return {
             statusCode: 0,
             message: 'Data pengguna berhasil diperbarui',
-            data: updatedUser,
         };
     }
 

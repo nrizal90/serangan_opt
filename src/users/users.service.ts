@@ -74,13 +74,16 @@ export class UsersService {
     }
 
     async updateUser(id: string, updateUserDto: UpdateUserDto, currentUserId: string) {
-        const user = await this.prisma.user.findUnique({ where: { id } });
+        console.log(currentUserId)
+        const user = await this.getUserById( currentUserId );
         if (!user) {
             throw new NotFoundException('Pengguna tidak ditemukan');
         }
 
+        const isAdmin = user.role.name.includes('Admin');
+        
         // Jika user bukan Admin, hanya bisa mengupdate dirinya sendiri
-        if (id !== currentUserId) {
+        if (id !== currentUserId && !isAdmin) {
             throw new ForbiddenException('Anda hanya bisa memperbarui data Anda sendiri');
         }
 
